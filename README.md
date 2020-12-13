@@ -1,9 +1,4 @@
-# Building Organization Service Health Check Solution with Cloud9 and QuickSight
-
-This lab is provided as part of [AWS Summit Online](https://aws.amazon.com/events/summits/online/), click [here](https://github.com/phonghuule/awssummmitonline) to explore the full list of hands-on labs.<br /><br />
-  ℹ️  You will run this lab in your own AWS account. Please follow directions at the end of the lab to remove resources to avoid future costs.<br />
-  ℹ️  Make sure your AWS account has "Business" or "Enterprise" support plan, so as to be able to consume Health API at Organization level.<br /><br />
-
+# Building Organization Service Health Check Solution with Lambda and QuickSight
 
 
 This lab is intended to showcase the Health API Organization View feature. Organization View is intended to aggregate Personal Health Dashboard/Health events at the PAYER account level within an organization. Thus it requires an Organization hierarchy, including linked accounts. Furthermore, for the data required to be aggregated at the PAYER account level, it needs to be enabled prior to the Personal Health Dashboard notification being created.
@@ -14,7 +9,7 @@ At minimum, user can use their own AWS account with Business or Enterprise suppo
 
 
 # Introduction
-This lab aims to show users how easy it is to call AWS health API at organization level through Cloud9. The python code initially runs locally in the Cloud9 environment, where we will upload the health status data to S3 bucket, and then visualise the data using QuickSight. Optionally, user can consider to integrate email SNS to get notification upon the conditions setup by the operation team.
+This lab aims to show users how easy it is to call AWS health API at organization level through Lambda. The python code initially runs locally in the Lambda environment, where we will upload the health status data to S3 bucket, and then visualise the data using QuickSight. Optionally, user can consider to integrate email SNS to get notification upon the conditions setup by the operation team.
 
 ![Image of Yaktocat](https://github.com/JerryChenZeyun/aws-health-api-organization-view/blob/master/media/Screen%20Shot%202020-02-23%20at%209.02.34%20pm.png)
 <br /><br />
