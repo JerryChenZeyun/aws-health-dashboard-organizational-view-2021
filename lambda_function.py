@@ -67,7 +67,7 @@ def get_s3_file_status():
     try:
         s3.Object(bucketName, csvFileName).load()
     except ClientError as e:
-        if e.response['Error']['Code'] == "404":
+        if e.response['Error']['Code'] != "200":
             # The object does not exist.
             print ("data file doesn't exist.")
             return (False)   
