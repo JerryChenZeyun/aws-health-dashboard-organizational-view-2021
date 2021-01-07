@@ -25,7 +25,9 @@ Resources:
       - aws-health-api-polling-ae1b9c80-aae2-44f2-9a3c-9c282db54ee3.zip
     DependsOn:
     - LambdaExeRole
-    - AWSHealthApiDataHostingBucket
+    - PublicS3BucketReadPolicy
+    - S3BucketReadWritePolicy
+    - AWSHealthApiDataHostingBucket    
   LambdaExeRole:
     Type: AWS::IAM::Role
     Properties:
@@ -40,8 +42,42 @@ Resources:
           - sts:AssumeRole
       ManagedPolicyArns:
       - arn:aws:iam::aws:policy/AWSHealthFullAccess
-      - arn:aws:iam::aws:policy/AmazonS3FullAccess
       - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+  S3BucketReadWritePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: S3_health_bucket_read_write
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:GetObject'
+              - 's3:PutObject'
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Join
+                  - ''
+                  - - !Ref S3BucketNameforHealthData
+                    - !Join
+                      - ''
+                      - - '/*'
+      Roles:
+        - Ref: LambdaExeRole
+  PublicS3BucketReadPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: Public_S3_bucket_read
+      PolicyDocument: 
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:GetObject'
+            Resource: 'arn:aws:s3:::my-public-bucket-2021/*'
+      Roles:
+        - Ref: LambdaExeRole
   awshealthapipolling:
     Type: AWS::Serverless::Function
     Properties:
@@ -72,6 +108,7 @@ Resources:
     - CopyZips
   CopyZipsFunction:
     Type: AWS::Lambda::Function
+    DependsOn: S3BucketReadWritePolicy
     Properties:
       Description: Copies objects from a source S3 bucket to a destination
       Handler: index.handler
