@@ -1,10 +1,8 @@
 ####################################################################################################################################################################################
 # Script Function: Demonstrate AWS Health API for Organization View
 # Author: JC
-# Time: 2020.12.24
-# Version: 1.4
-# Execution requirements: 
-#   Update the "bucketName" value following the instruction from Step 10 in  https://github.com/JerryChenZeyun/aws-health-api-organization-view/blob/master/README.md#setup
+# Time: 2021.01.12
+# Version: 1.5
 ####################################################################################################################################################################################
 import json
 import logging
@@ -18,14 +16,14 @@ from botocore.exceptions import ClientError
 import os
 import urllib.request
 import fileinput
-from time import sleep
+import cfnresponse
 
 ####################################################################################################################################################################################
 bucketName = os.environ.get('s3_bucket_name')
 ####################################################################################################################################################################################
 
 csvFileName = 'event_data_file.csv'
-manifest_url = 'https://raw.githubusercontent.com/JerryChenZeyun/aws-health-api-organization-view/master/manifest.json'
+manifest_url = 'https://raw.githubusercontent.com/JerryChenZeyun/aws-health-dashboard-organizational-view-2021/master/manifest.json'
 
 arn_list = []
 service_list = []
@@ -67,7 +65,7 @@ def get_s3_file_status():
     try:
         s3.Object(bucketName, csvFileName).load()
     except ClientError as e:
-        if e.response['Error']['Code'] != "200":
+        if e.response['Error']['Code'] == "404":
             # The object does not exist.
             print ("data file doesn't exist.")
             return (False)   
@@ -340,10 +338,9 @@ def lambda_handler(event, context):
         ## describe_affected_accounts & describe_affected_entities
         for arn in arn_list:
             eventAffectedAccounts = describe_affected_accounts(arn)
-            sleep(1)
             print ("eventAffectedAccounts:",eventAffectedAccounts)
             impactedAccount_List.append(eventAffectedAccounts)
-            sleep(1)            
+            
             eventAffectedEntities = describe_affected_entities(arn)
             print ("eventAffectedEntities:",eventAffectedEntities)
             impactedEntity_List.append(eventAffectedEntities)
@@ -374,12 +371,10 @@ def lambda_handler(event, context):
                 eventAffectedAccounts = describe_affected_accounts(arn)
                 print ("eventAffectedAccounts:",eventAffectedAccounts)
                 impactedAccount_List.append(eventAffectedAccounts)
-                sleep(1)
                 
                 eventAffectedEntities = describe_affected_entities(arn)
                 print ("eventAffectedEntities:",eventAffectedEntities)
                 impactedEntity_List.append(eventAffectedEntities)
-                sleep(1)
             
             print("complete impacted account list:", impactedAccount_List)    
             print("complete impacted entity list:", impactedEntity_List)
