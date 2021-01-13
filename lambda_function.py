@@ -1,8 +1,8 @@
 ####################################################################################################################################################################################
 # Script Function: Demonstrate AWS Health API for Organization View
 # Author: JC
-# Time: 2021.01.12
-# Version: 1.5
+# Time: 2021.01.13
+# Version: 1.6
 ####################################################################################################################################################################################
 import json
 import logging
@@ -73,7 +73,7 @@ def get_s3_file_status():
     try:
         s3.Object(bucketName, csvFileName).load()
     except ClientError as e:
-        if e.response['Error']['Code'] == "404":
+        if e.response['Error']['Code'] != "200":
             # The object does not exist.
             print ("data file doesn't exist.")
             return (False)   
