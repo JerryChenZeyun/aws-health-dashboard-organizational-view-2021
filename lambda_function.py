@@ -16,7 +16,7 @@ from botocore.exceptions import ClientError
 import os
 import urllib.request
 import fileinput
-import cfnresponse
+from botocore.config import Config
 
 ####################################################################################################################################################################################
 bucketName = os.environ.get('s3_bucket_name')
@@ -24,6 +24,14 @@ bucketName = os.environ.get('s3_bucket_name')
 
 csvFileName = 'event_data_file.csv'
 manifest_url = 'https://raw.githubusercontent.com/JerryChenZeyun/aws-health-dashboard-organizational-view-2021/master/manifest.json'
+
+config = Config(
+        retries = dict(
+            max_attempts = 10 # org view apis have a lower tps than the single
+                              # account apis so we need to use larger
+                              # backoff/retry values than than the boto defaults
+        )
+    )
 
 arn_list = []
 service_list = []
@@ -39,7 +47,7 @@ eventDescription_List = []
 impactedEntity_List = []
 
 def enable_health_org():
-    client = boto3.client('health', 'us-east-1')
+    client = boto3.client('health', 'us-east-1', config=config)
     try:
         response = client.enable_health_service_access_for_organization()
         print("enable health api at organization level success")
@@ -160,14 +168,14 @@ def create_manifest():
 
 ## describe_health_service_status_for_organization
 def describe_health_service_status_for_org():
-    client = boto3.client('health', 'us-east-1')
+    client = boto3.client('health', 'us-east-1', config=config)
     response = client.describe_health_service_status_for_organization()
     print(response)
     print("\n#########################################################################\n")
 
 ## describe_events_for_organization(**kwargs)
 def describe_events_for_org(start_time):
-    client = boto3.client('health', 'us-east-1')
+    client = boto3.client('health', 'us-east-1', config=config)
     event_paginator = client.get_paginator('describe_events_for_organization')
     event_page_iterator = event_paginator.paginate(
         filter={
@@ -238,7 +246,7 @@ def check_latest_event():
 ## describe_affected_accounts
 def describe_affected_accounts(event_arn):
     affectedAccounts = []
-    client = boto3.client('health', 'us-east-1')
+    client = boto3.client('health', 'us-east-1', config=config)
     event_accounts_paginator = client.get_paginator('describe_affected_accounts_for_organization')
     
     event_accounts_page_iterator = event_accounts_paginator.paginate(eventArn=event_arn)
@@ -264,7 +272,7 @@ def get_account_id():
 def describe_affected_entities(event_arn):
     affectedEntities = []
     affectedEntities_sub_list = []
-    client = boto3.client('health', 'us-east-1')
+    client = boto3.client('health', 'us-east-1', config=config)
     affected_accounts = describe_affected_accounts(event_arn)
     
     for affected_account in affected_accounts:
