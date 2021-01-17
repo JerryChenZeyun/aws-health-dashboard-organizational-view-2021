@@ -1,12 +1,13 @@
 ####################################################################################################################################################################################
 # Script Function: Demonstrate AWS Health API for Organization View
 # Author: JC
-# Time: 2021.01.13
-# Version: 1.6
+# Time: 2021.01.17
+# Version: 1.7
 ####################################################################################################################################################################################
 import json
 import logging
 from datetime import datetime
+from datetime import timedelta  
 from dateutil import parser
 import boto3
 import json
@@ -342,7 +343,9 @@ def lambda_handler(event, context):
         ## describe_health_service_status_for_organization
         describe_health_service_status_for_org()
         ## describe_events_for_organization(**kwargs)
-        describe_events_for_org(datetime(2015,1,1))
+        startDate = datetime.now() - timedelta(days=90)
+        print("the date is: ", startDate)
+        describe_events_for_org(datetime.now() - timedelta(days=90))
         ## describe_affected_accounts & describe_affected_entities
         for arn in arn_list:
             eventAffectedAccounts = describe_affected_accounts(arn)
