@@ -1,8 +1,8 @@
 ####################################################################################################################################################################################
 # Script Function: Demonstrate AWS Health API for Organization View
 # Author: JC
-# Time: 2021.01.17
-# Version: 1.7
+# Time: 2022.12.30
+# Version: 1.8
 ####################################################################################################################################################################################
 import json
 import logging
@@ -257,7 +257,7 @@ def describe_affected_accounts(event_arn):
         parsed_event_accounts = json.loads (json_event_accounts)
             
         if((parsed_event_accounts['affectedAccounts']) == "[]"):
-            affectedAccounts = affectedAccounts +"[]"
+            affectedAccounts = affectedAccounts + [""]
         else:
             affectedAccounts = affectedAccounts + (parsed_event_accounts['affectedAccounts'])
         print("For service event arn: {}".format(event_arn))
@@ -314,7 +314,7 @@ def describe_affected_entities(event_arn):
             print("\n#########################################################################\n")
                 
         if(len(affectedEntities_sub_list) == 0):
-            affectedEntities = affectedEntities + "[]"
+            affectedEntities = affectedEntities + [""]
         else:
             affectedEntities = affectedEntities + affectedEntities_sub_list
     return(affectedEntities)
