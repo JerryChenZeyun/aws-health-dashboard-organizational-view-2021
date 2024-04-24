@@ -19,7 +19,7 @@ Resources:
     Properties:
       ServiceToken: !GetAtt 'CopyZipsFunction.Arn'
       DestBucket: !Ref 'AWSHealthApiDataHostingBucket'
-      SourceBucket: 'my-public-bucket-2021'
+      SourceBucket: 'aws-org-health-dashboard-2021'
       Prefix: ''
       Objects:
       - aws-health-api-polling-ae1b9c80-aae2-44f2-9a3c-9c282db54ee3.zip
@@ -75,7 +75,7 @@ Resources:
           - Effect: Allow
             Action:
               - 's3:GetObject'
-            Resource: 'arn:aws:s3:::my-public-bucket-2021/*'
+            Resource: 'arn:aws:s3:::aws-org-health-dashboard-2021/*'
       Roles:
         - Ref: LambdaExeRole
   awshealthapipolling:
@@ -88,7 +88,7 @@ Resources:
           s3_bucket_name:
             Ref: S3BucketNameforHealthData
       Handler: lambda_function.lambda_handler
-      Runtime: python3.8
+      Runtime: python3.10
       CodeUri:
         Bucket: 
           Ref: S3BucketNameforHealthData
@@ -112,7 +112,7 @@ Resources:
     Properties:
       Description: Copies objects from a source S3 bucket to a destination
       Handler: index.handler
-      Runtime: python3.8
+      Runtime: python3.10
       Role: !GetAtt 'LambdaExeRole.Arn'
       Timeout: 240
       Code:
